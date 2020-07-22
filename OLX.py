@@ -16,37 +16,37 @@ def get_total_pages(html):
     return int(total_pages)
 
 
-def write_csv(data):
-    with open('olx.csv', 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow((data['title'],
-                         data['price'],
-                         data['geo'],
-                         data['url']))
+def write_csv(data, writes_count):
+    with open('olx.csv', 'a', newline='') as csvfile:
+        fieldnames = ['Название', 'Цена', 'Город', 'Ссылка']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if writes_count < 1:
+            writer.writeheader()
+        writer.writerow({'Название': data['title'], 'Цена': data['price'], 'Город': data['geo'], 'Ссылка': data['url']})
 
 
 def get_page_data(html):
     soup = BeautifulSoup(html, 'lxml')
     ads = soup.find('div', class_='listHandler').find_all('div', class_='offer-wrapper')
+    writes_count = 0
     for ad in ads:
         # title, price, geo, url
         try:
-            title = ad.find('div', class_='space rel').find('strong').get_text().split(",")
+            title = ad.find('div', class_='space rel').find('strong').get_text().split(",")[0]
         except:
             title = ''
         try:
             url = ad.find('div', class_='space rel').find('h3', class_='lheight22 margintop5').find('a').get(
-                'href').split(",")
+                'href').split(",")[0]
         except:
             url = ''
         try:
-            price = ad.find('div', class_='space inlblk rel').find('p', class_='price').get_text().strip().split(",")
+            price = ad.find('div', class_='space inlblk rel').find('p', class_='price').get_text().strip().split(",")[0]
         except:
             price = ''
         try:
-            geo = ad.find_all('p', class_='lheight16')[1].text.strip().split(",")
-            # geo = ad.find('i', )
-            # geo = ad.find_all('span')[1].text.strip().split(",")
+            geo = ad.find_all('p', class_='lheight16')[1].text.strip().split(",")[0]
+            geo = ''.join(geo.split()[0])
         except:
             geo = ''
         data = {'title': title,
@@ -54,7 +54,8 @@ def get_page_data(html):
                 'geo': geo,
                 'url': url}
 
-        write_csv(data)
+        write_csv(data, writes_count)
+        writes_count += 1
 
 
 def main():
@@ -72,4 +73,3 @@ def main():
 
 
 main()
-# Чисто тестовое изменение

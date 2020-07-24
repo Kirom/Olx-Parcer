@@ -29,8 +29,8 @@ def get_page_data(html):
     soup = BeautifulSoup(html, 'lxml')
     ads = soup.find('div', class_='listHandler').find_all('div', class_='offer-wrapper')
     writes_count = 0
+    ids = []
     for ad in ads:
-        # title, price, geo, url
         try:
             title = ad.find('div', class_='space rel').find('strong').get_text().split(",")[0]
         except:
@@ -49,13 +49,23 @@ def get_page_data(html):
             geo = ''.join(geo.split()[0])
         except:
             geo = ''
+        try:
+            id = ad.find('table').get_attribute_list('data-id')[0]
+            ids.append(id)
+        except:
+            id = ''
         data = {'title': title,
                 'price': price,
                 'geo': geo,
-                'url': url}
-
+                'url': url, }
         write_csv(data, writes_count)
         writes_count += 1
+
+
+def clean_data(data_list, id):
+    for ad in data_list:
+        if id in ad.get('id'):
+            data_list.remove(ad)
 
 
 def main():

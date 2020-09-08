@@ -12,7 +12,7 @@ class Scraper:
         self.total_pages = self.get_total_pages(self.get_html(self.url))
         self.ad_ids = []
         self.csvfile = open('olx.csv', 'a', newline='')
-        self.fieldnames = ['Название', 'Цена', 'Город', 'Ссылка']
+        self.fieldnames = ['Title', 'Price', 'Location', 'Link']
         self.writer = csv.DictWriter(self.csvfile, fieldnames=self.fieldnames)
 
     @staticmethod
@@ -66,7 +66,7 @@ class Scraper:
 
     def write_csv(self, data):
         self.writer.writerow(
-            {'Название': data['title'], 'Цена': data['price'], 'Город': data['geo'], 'Ссылка': data['url']})
+            {'Title': data['title'], 'Price': data['price'], 'Location': data['geo'], 'Link': data['url']})
 
     def run(self):
         self.writer.writeheader()
